@@ -20,7 +20,20 @@ export function tokenize(inputStrings: string[]): IToken[] {
         }
 
         if (currentAttributeDelimiter) { // we have a placeholder(s) inside an attribute's value
-            // TODO
+            if (currentString.includes(currentAttributeDelimiter)) {
+                const valueEndIndex = currentString.indexOf(currentAttributeDelimiter)
+                result.push({
+                    type: TokenType.ATTRIBUTE_NAME,
+                    value: currentString.substring(0, valueEndIndex),
+                })
+                tokenIndex += valueEndIndex + 1
+            } else {
+                result.push({
+                    type: TokenType.ATTRIBUTE_VALUE,
+                    value: currentString,
+                })
+                tokenIndex = currentString.length
+            }
             continue
         }
 
@@ -31,7 +44,7 @@ export function tokenize(inputStrings: string[]): IToken[] {
                 continue
             }
 
-            const attributeNameMatch = currentString.match(/^[^=>/\s]/)
+            const attributeNameMatch = currentString.match(/^[^=>/\s]+/)
             if (attributeNameMatch) {
                 result.push({
                     type: TokenType.ATTRIBUTE_NAME,
