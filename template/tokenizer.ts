@@ -18,7 +18,7 @@ export function tokenize(inputStrings: string[]): IToken[] {
             })
             continue
         }
-        
+
         if (currentAttributeDelimiter) { // we have a placeholder(s) inside an attribute's value
             // TODO
             continue
@@ -65,7 +65,7 @@ export function tokenize(inputStrings: string[]): IToken[] {
 
                     currentAttributeDelimiter = nextChar as '"' | '\''
                     tokenIndex += 1
-                    
+
                     if (tokenIndex < currentFullString.length) {
                         result.push({
                             type: TokenType.ATTRIBUTE_VALUE,
@@ -88,9 +88,9 @@ export function tokenize(inputStrings: string[]): IToken[] {
             throw new Error(`Parsing failed in fragment #${stringIndex}, position ${tokenIndex}`)
         } else {
             const matchers = Object.entries(TOKEN_MATCHER)
-            const matches = matchers.map(matcher => currentString.match(matcher[1]))
-            const bestMatchLength = Math.max(...matches.filter(match => match).map(match => (match!)[0].length))
-            const bestMatchIndex = matches.findIndex(match => match ? match[0].length === bestMatchLength : false)
+            const matches = matchers.map((matcher) => currentString.match(matcher[1]))
+            const bestMatchLength = Math.max(...matches.filter((match) => match).map((match) => (match!)[0].length))
+            const bestMatchIndex = matches.findIndex((match) => match ? match[0].length === bestMatchLength : false)
             if (bestMatchIndex === -1) {
                 throw new Error(`Parsing failed in fragment #${stringIndex}, position ${tokenIndex}`)
             }
@@ -155,10 +155,10 @@ interface IToken {
 
 const WHITESPACE_MATCHER = /^\s+/
 const TOKEN_MATCHER = {
-    TEXT: /^[^<]+/,
     COMMENT: /^<!--[^>]*-->/,
-    ELEMENT_START_OPEN: /^</,
     ELEMENT_END: /^<\/[^>]+>/,
+    ELEMENT_START_OPEN: /^</,
+    TEXT: /^[^<]+/,
 }
 
 enum TokenType {
@@ -169,5 +169,5 @@ enum TokenType {
     ELEMENT_END = 'TokenType.ELEMENT_START_END',
     ATTRIBUTE_NAME = 'TokenType.ATTRIBUTE_NAME',
     ATTRIBUTE_VALUE = 'TokenType.ATTRIBUTE_VALUE',
-    PLACEHOLDER = 'TokenType.PLACEHOLDER'
+    PLACEHOLDER = 'TokenType.PLACEHOLDER',
 }

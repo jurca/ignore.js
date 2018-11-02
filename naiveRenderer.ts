@@ -1,6 +1,6 @@
 import {ComponentRenderer} from './Component'
 
-const renderToDom: ComponentRenderer<string> = function renderToDom(renderResult: string, mountNode: HTMLElement) {
+const renderToDom: ComponentRenderer<string> = (renderResult: string, mountNode: HTMLElement) => {
     if (mountNode.shadowRoot) {
         return
     }

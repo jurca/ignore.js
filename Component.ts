@@ -1,4 +1,4 @@
-export interface IComponent<P extends Object, E extends {[refName: string]: HTMLElement}, R> {
+export interface IComponent<P extends object, E extends {[refName: string]: HTMLElement}, R> {
     readonly props: P
     readonly refs: E
 
@@ -12,23 +12,24 @@ export interface IComponent<P extends Object, E extends {[refName: string]: HTML
     onUnmount(): void
 }
 
-export interface IComponentStaticMembers<P extends Object> {
+export interface IComponentStaticMembers<P extends object> {
     props: string[]
 }
 
-export type ComponentDeclaration<P extends Object, E extends {[refName: string]: HTMLElement}, R> =
+export type ComponentDeclaration<P extends object, E extends {[refName: string]: HTMLElement}, R> =
     IComponentStaticMembers<P> & {new(): IComponent<P, E, R>}
 
 export type ComponentRenderer<R> = (renderResult: R, mountNode: HTMLElement) => void
 
 const PRIVATE = {
+    mountNode: Symbol('mountNode'),
     renderer: Symbol('renderer'),
-    mountNode: Symbol('mountNode')
 }
 
-export abstract class Component<P, E extends {[refName: string]: HTMLElement}, R> implements IComponent<P, E, R> {
-    props: P = {} as P
-    refs: E
+export abstract class Component<P extends object, E extends {[refName: string]: HTMLElement}, R>
+        implements IComponent<P, E, R> {
+    public props: P = {} as P
+    public refs: E
 
     constructor(renderer: ComponentRenderer<R>) {
         this.refs = new Proxy(Object.create(null), {
@@ -46,22 +47,22 @@ export abstract class Component<P, E extends {[refName: string]: HTMLElement}, R
         })
     }
 
-    abstract render(): R
+    public abstract render(): R
 
-    renderToDom(renderResult: R, mountNode: HTMLElement): void {
+    public renderToDom(renderResult: R, mountNode: HTMLElement): void {
         this[PRIVATE.renderer]()
         this[PRIVATE.mountNode] = mountNode
     }
 
-    onMount(): void {}
+    public onMount(): void {} // tslint:disable-line no-empty
 
-    shouldUpdate(nextProps: P, changedProps: string[]): boolean {
+    public shouldUpdate(nextProps: P, changedProps: string[]): boolean {
         return true
     }
 
-    onBeforeUpdate(nextProps: P, changedProps: string[]): void {}
+    public onBeforeUpdate(nextProps: P, changedProps: string[]): void {} // tslint:disable-line no-empty
 
-    onAfterUpdate(prevProps: P, changedProps: string[]): void {}
+    public onAfterUpdate(prevProps: P, changedProps: string[]): void {} // tslint:disable-line no-empty
 
-    onUnmount(): void {}
+    public onUnmount(): void {} // tslint:disable-line no-empty
 }

@@ -1,15 +1,15 @@
 import {ComponentDeclaration} from './Component'
 
 const PRIVATE = {
-    broker: Symbol('broker')
+    broker: Symbol('broker'),
 }
 
-export function define<P, E extends {[refName: string]: HTMLElement}, R>(
+export function define<P extends object, E extends {[refName: string]: HTMLElement}, R>(
     componentName: string,
     declaration: ComponentDeclaration<P, E, R>,
 ): void {
     customElements.define(componentName, class extends HTMLElement {
-        static readonly is = componentName
+        public static readonly is: string = componentName
 
         constructor() {
             super()
@@ -18,8 +18,8 @@ export function define<P, E extends {[refName: string]: HTMLElement}, R>(
             Object.defineProperty(this, PRIVATE.broker, broker)
             for (const property of declaration.props) {
                 Object.defineProperty(this, property, {
-                    enumerable: true,
                     configurable: false,
+                    enumerable: true,
                     get() {
                         return broker.props[property]
                     },
@@ -45,18 +45,18 @@ export function define<P, E extends {[refName: string]: HTMLElement}, R>(
             }
         }
 
-        connectedCallback() {
+        public connectedCallback() {
             if (this.isConnected) {
                 this[PRIVATE.broker].onMount()
             }
         }
 
-        disconnectedCallback() {
+        public disconnectedCallback() {
             this[PRIVATE.broker].onUnmount()
         }
 
-        adoptedCallback() {} // not used
+        public adoptedCallback() {} // tslint:disable-line no-empty
 
-        attributeChangedCallback() {} // not used
+        public attributeChangedCallback() {} // tslint:disable-line no-empty
     })
 }
