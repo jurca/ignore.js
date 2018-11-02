@@ -1,0 +1,30 @@
+{
+  "name": "@jurca/x-ignore",
+  "version": "0.0.0",
+  "description": "Re-exploring web components with declarative rendering. This is a just-for-fun project, do not take it too seriously.",
+  "main": "ignore.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurca/ignore.js.git"
+  },
+  "keywords": [
+    "web",
+    "component",
+    "declarative",
+    "html",
+    "ui"
+  ],
+  "author": "Martin Jurča <mjurca@centrum.cz>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jurca/ignore.js/issues"
+  },
+  "homepage": "https://github.com/jurca/ignore.js#readme",
+  "devDependencies": {
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.6"
+  }
+}
