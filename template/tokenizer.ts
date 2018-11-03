@@ -161,20 +161,12 @@ export function tokenize(inputStrings: string[]): IToken[] {
     return result
 }
 
-interface IToken {
+export interface IToken {
     type: TokenType,
     value: string,
 }
 
-const WHITESPACE_MATCHER = /^\s+/
-const TOKEN_MATCHER = {
-    COMMENT: /^<!--[^>]*-->/,
-    ELEMENT_END: /^<\/[^>]+>/,
-    ELEMENT_START_OPEN: /^</,
-    TEXT: /^[^<]+/,
-}
-
-enum TokenType {
+export enum TokenType {
     TEXT = 'TokenType.TEXT',
     COMMENT = 'TokenType.COMMENT',
     ELEMENT_START_OPEN = 'TokenType.ELEMENT_START_OPEN',
@@ -183,4 +175,12 @@ enum TokenType {
     ATTRIBUTE_NAME = 'TokenType.ATTRIBUTE_NAME',
     ATTRIBUTE_VALUE = 'TokenType.ATTRIBUTE_VALUE',
     PLACEHOLDER = 'TokenType.PLACEHOLDER',
+}
+
+const WHITESPACE_MATCHER = /^\s+/
+const TOKEN_MATCHER = {
+    COMMENT: /^<!--[^>]*-->/,
+    ELEMENT_END: /^<\/[^>]+>/,
+    ELEMENT_START_OPEN: /^</,
+    TEXT: /^[^<]+/,
 }
