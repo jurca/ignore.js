@@ -13,6 +13,7 @@ export function parse(tokens: IToken[]): ITemplateNode[] {
                     children: [],
                     elementName: '',
                     type: TemplateNodeType.TEXT,
+                    value: token.value,
                 })
                 break
 
@@ -22,6 +23,7 @@ export function parse(tokens: IToken[]): ITemplateNode[] {
                     children: [],
                     elementName: '',
                     type: TemplateNodeType.COMMENT,
+                    value: token.value,
                 })
                 break
 
@@ -31,6 +33,7 @@ export function parse(tokens: IToken[]): ITemplateNode[] {
                     children: [],
                     elementName: token.value,
                     type: TemplateNodeType.ELEMENT,
+                    value: '',
                 })
                 break
 
@@ -82,6 +85,7 @@ export function parse(tokens: IToken[]): ITemplateNode[] {
                         children: [],
                         elementName: '',
                         type: TemplateNodeType.PLACEHOLDER,
+                        value: '',
                     })
                 }
                 break
@@ -119,6 +123,7 @@ export interface ITemplateNode {
     elementName: string
     attributes: IAttribute[]
     children: ITemplateNode[]
+    value: string
 }
 
 export enum TemplateNodeType {
