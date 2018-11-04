@@ -1,4 +1,4 @@
-export function tokenize(inputStrings: string[]): IToken[] {
+export default function tokenize(inputStrings: string[]): IToken[] {
     const result: IToken[] = []
 
     let stringIndex = 0

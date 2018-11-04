@@ -1,6 +1,6 @@
 import {IToken, TokenType} from './tokenizer'
 
-export function parse(tokens: IToken[]): ITemplateNode[] {
+export default function parse(tokens: IToken[]): ITemplateNode[] {
     const result: ITemplateNode[] = []
     let currentFragment = result
     const fragmentStack: ITemplateNode[][] = []

@@ -1,4 +1,5 @@
 import Template, {AttributeValueFragmentType as TemplateAttributeValueFragmentType} from './Template'
+import {TemplateResult} from './templateFactory'
 
 export default class TemplateInstance {
     public readonly dom: DocumentFragment
@@ -81,9 +82,11 @@ function preRenderValue(value: any): Node {
         return result
     }
 
-    if (value instanceof Template) {
+    if (value instanceof TemplateResult) {
         // we want to always re-create nested templates, since caching would be somewhat complex
-        return preRenderValue(new TemplateInstance(value))
+        const template = new TemplateInstance(value.template)
+        template.setPlaceholderValues(value.placeholderValues)
+        return preRenderValue(template)
     }
 
     if (value instanceof TemplateInstance) {
