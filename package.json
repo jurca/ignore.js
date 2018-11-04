@@ -4,8 +4,10 @@
   "description": "Re-exploring web components with declarative rendering. This is a just-for-fun project, do not take it too seriously.",
   "main": "ignore.js",
   "scripts": {
-    "build": "rm -r dist/ 2>&1 >/dev/null; tsc --outDir dist",
-    "test": "tslint --project ."
+    "build": "rm -r dist/ 2>&1 >/dev/null; tsc --outDir dist && cp package.json README.md dist/",
+    "test": "tslint --project .",
+    "prepublishOnly": "echo 'Use npm run publish-package' && exit 1",
+    "publish-package": "npm test && npm build"
   },
   "repository": {
     "type": "git",
