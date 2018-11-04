@@ -3,15 +3,15 @@ import parser from './parser'
 import Template from './Template'
 import tokenizer from './tokenizer'
 
-const TEMPLATE_CACHE: {[key: string]: Template} = {}
+const templateCache: {[key: string]: Template} = {}
 
 export default function tpl(strings: string[], ...placeholderValues: any[]): TemplateResult {
     const cacheKey = strings.join('')
-    if (!TEMPLATE_CACHE[cacheKey]) {
-        TEMPLATE_CACHE[cacheKey] = compiler(parser(tokenizer(strings)))
+    if (!templateCache[cacheKey]) {
+        templateCache[cacheKey] = compiler(parser(tokenizer(strings)))
     }
 
-    const template = TEMPLATE_CACHE[cacheKey]
+    const template = templateCache[cacheKey]
 
     return new TemplateResult(template, placeholderValues)
 }

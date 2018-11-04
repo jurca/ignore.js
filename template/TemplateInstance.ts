@@ -2,11 +2,13 @@ import Template, {AttributeValueFragmentType as TemplateAttributeValueFragmentTy
 import {TemplateResult} from './templateFactory'
 
 export default class TemplateInstance {
+    public readonly template: Template
     public readonly dom: DocumentFragment
     private readonly attributes: IDynamicAttribute[]
     private readonly fragments: IDynamicFragment[]
 
     constructor(template: Template) {
+        this.template = template
         this.dom = template.dom.cloneNode(true) as DocumentFragment
         for (const property of template.nodeProperties) {
             const element = getNode(this.dom, property.nodePath)
@@ -83,7 +85,6 @@ function preRenderValue(value: any): Node {
     }
 
     if (value instanceof TemplateResult) {
-        // we want to always re-create nested templates, since caching would be somewhat complex
         const template = new TemplateInstance(value.template)
         template.setPlaceholderValues(value.placeholderValues)
         return preRenderValue(template)
