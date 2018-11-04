@@ -1,6 +1,6 @@
-import {ComponentRenderer} from './Component'
-import {TemplateResult} from './template/templateFactory'
-import TemplateInstance from './template/TemplateInstance'
+import {ComponentRenderer} from './Component.js'
+import {TemplateResult} from './template/templateFactory.js'
+import TemplateInstance from './template/TemplateInstance.js'
 
 const templateInstanceCache: WeakMap<HTMLElement, TemplateInstance> = new WeakMap()
 

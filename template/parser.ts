@@ -1,4 +1,4 @@
-import {IToken, TokenType} from './tokenizer'
+import {IToken, TokenType} from './tokenizer.js'
 
 export default function parse(tokens: IToken[]): ITemplateNode[] {
     const result: ITemplateNode[] = []

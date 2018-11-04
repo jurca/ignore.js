@@ -1,4 +1,4 @@
-import {ComponentRenderer} from './Component'
+import {ComponentRenderer} from './Component.js'
 
 const renderToDom: ComponentRenderer<string> = (renderResult: string, mountNode: HTMLElement) => {
     if (mountNode.shadowRoot) {

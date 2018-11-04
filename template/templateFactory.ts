@@ -1,7 +1,7 @@
 import compiler from './compiler'
 import parser from './parser'
-import Template from './Template'
-import tokenizer from './tokenizer'
+import Template from './Template.js'
+import tokenizer from './tokenizer.js'
 
 const templateCache: {[key: string]: Template} = {}
 

@@ -1,4 +1,4 @@
-import {ComponentDeclaration} from './Component'
+import {ComponentDeclaration} from './Component.js'
 
 const PRIVATE = {
     broker: Symbol('broker'),

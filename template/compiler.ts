@@ -1,4 +1,4 @@
-import {AttributeValueFragmentType, ITemplateNode, TemplateNodeType} from './parser'
+import {AttributeValueFragmentType, ITemplateNode, TemplateNodeType} from './parser.js'
 import Template,
     {
         IAttributeValueLiteralFragment,
@@ -6,7 +6,7 @@ import Template,
         IDynamicAttribute,
         IDynamicFragment,
         INodeProperty,
-    } from './Template'
+    } from './Template.js'
 
 export default function compile(template: ITemplateNode[]): Template {
     const attributes: IDynamicAttribute[] = []

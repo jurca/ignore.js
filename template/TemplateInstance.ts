@@ -1,5 +1,5 @@
-import Template, {AttributeValueFragmentType as TemplateAttributeValueFragmentType} from './Template'
-import {TemplateResult} from './templateFactory'
+import Template, {AttributeValueFragmentType as TemplateAttributeValueFragmentType} from './Template.js'
+import {TemplateResult} from './templateFactory.js'
 
 export default class TemplateInstance {
     public readonly template: Template
