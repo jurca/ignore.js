@@ -1,26 +1,21 @@
 import {AttributeValueFragmentType, ITemplateNode, TemplateNodeType} from './parser'
-import ITemplate,
+import Template,
     {
         IAttributeValueLiteralFragment,
         IAttributeValuePlaceholderFragment,
         IDynamicAttribute,
-        IDynamicText,
+        IDynamicFragment,
         INodeProperty,
     } from './Template'
 
-export default function compile(template: ITemplateNode[]): ITemplate {
+export default function compile(template: ITemplateNode[]): Template {
     const attributes: IDynamicAttribute[] = []
-    const texts: IDynamicText[] = []
+    const fragments: IDynamicFragment[] = []
     const properties: INodeProperty[] = []
     let currentPlaceholderIndex = 0
     const dom = compileFragment(template, [])
 
-    return {
-        dom,
-        dynamicAttributes: attributes,
-        dynamicTexts: texts,
-        nodeProperties: properties,
-    }
+    return new Template(dom, properties, attributes, fragments)
 
     function compileFragment(fragment: ITemplateNode[], nodePath: number[]): DocumentFragment {
         const compiledFragment = document.createDocumentFragment()
@@ -76,11 +71,13 @@ export default function compile(template: ITemplateNode[]): ITemplate {
                     break
 
                 case TemplateNodeType.PLACEHOLDER:
-                    compiledFragment.appendChild(document.createTextNode(''))
-                    texts.push({
+                    compiledFragment.appendChild(document.createComment(''))
+                    compiledFragment.appendChild(document.createComment(''))
+                    fragments.push({
                         nodePath: nodePath.concat(nodeIndex),
                         placeholderIndex: currentPlaceholderIndex++,
                     })
+                    nodeIndex++
                     break
             }
             nodeIndex++

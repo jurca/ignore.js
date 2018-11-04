@@ -1,8 +1,20 @@
-export default interface ITemplate {
-    readonly dom: DocumentFragment
-    readonly nodeProperties: INodeProperty[]
-    readonly dynamicAttributes: IDynamicAttribute[]
-    readonly dynamicTexts: IDynamicText[]
+export default class Template {
+    public readonly dom: DocumentFragment
+    public readonly nodeProperties: INodeProperty[]
+    public readonly dynamicAttributes: IDynamicAttribute[]
+    public readonly dynamicFragments: IDynamicFragment[]
+
+    constructor(
+        dom: DocumentFragment,
+        nodeProperties: INodeProperty[],
+        dynamicAttributes: IDynamicAttribute[],
+        dynamicFragments: IDynamicFragment[],
+    ) {
+        this.dom = dom
+        this.nodeProperties = nodeProperties
+        this.dynamicAttributes = dynamicAttributes
+        this.dynamicFragments = dynamicFragments
+    }
 }
 
 export type NodePath = number[]
@@ -19,7 +31,7 @@ export interface IDynamicAttribute {
     value: Array<IAttributeValueLiteralFragment | IAttributeValuePlaceholderFragment>
 }
 
-export interface IDynamicText {
+export interface IDynamicFragment {
     nodePath: NodePath
     placeholderIndex: number
 }
