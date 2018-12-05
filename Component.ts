@@ -26,7 +26,7 @@ const PRIVATE = {
     renderer: Symbol('renderer'),
 }
 
-export abstract class Component<P extends object, E extends {[refName: string]: HTMLElement}, R>
+export default abstract class Component<P extends object, E extends {[refName: string]: HTMLElement}, R>
         implements IComponent<P, E, R> {
     public props: P = {} as P
     public refs: E
