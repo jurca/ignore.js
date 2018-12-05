@@ -1,6 +1,6 @@
 {
   "name": "@jurca/-x-ignore",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Re-exploring web components with declarative rendering. This is a just-for-fun project, do not take it too seriously.",
   "main": "ignore.js",
   "scripts": {
