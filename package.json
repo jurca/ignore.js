@@ -7,7 +7,7 @@
     "build": "rm -r dist/ 2>&1 >/dev/null; tsc --outDir dist && cp package.json README.md dist/",
     "test": "tslint --project .",
     "prepublishOnly": "echo 'Use npm run publish-package' && exit 1",
-    "publish-package": "npm test && npm build"
+    "publish-package": "npm test && npm run build && git push && git push --tags && npm publish --access=public --ignore-scripts dist"
   },
   "repository": {
     "type": "git",
