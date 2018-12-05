@@ -4,7 +4,10 @@ import TemplateInstance from './template/TemplateInstance.js'
 
 const templateInstanceCache: WeakMap<HTMLElement, TemplateInstance> = new WeakMap()
 
-const renderToDom: ComponentRenderer<TemplateResult> = (renderResult: TemplateResult, mountNode: HTMLElement) => {
+export const renderToDom: ComponentRenderer<TemplateResult> = (
+    renderResult: TemplateResult,
+    mountNode: HTMLElement,
+) => {
     const shadowRoot = mountNode.shadowRoot || mountNode.attachShadow({
         mode: 'open',
     })
