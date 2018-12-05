@@ -50,7 +50,7 @@ export abstract class Component<P extends object, E extends {[refName: string]: 
     public abstract render(): R
 
     public renderToDom(renderResult: R, mountNode: HTMLElement): void {
-        this[PRIVATE.renderer]()
+        this[PRIVATE.renderer](renderResult, mountNode)
         this[PRIVATE.mountNode] = mountNode
     }
 
