@@ -15,7 +15,9 @@ export function define<P extends object, E extends {[refName: string]: HTMLEleme
             super()
 
             const broker = new declaration()
-            Object.defineProperty(this, PRIVATE.broker, broker)
+            Object.defineProperty(this, PRIVATE.broker, {
+                value: broker,
+            })
             for (const property of declaration.props) {
                 Object.defineProperty(this, property, {
                     configurable: false,
@@ -31,7 +33,7 @@ export function define<P extends object, E extends {[refName: string]: HTMLEleme
                         }
                         const changedProps = [property]
 
-                        if (broker.shouldUpdate(nextProps, changedProps)) {
+                        if (this.isConnected && broker.shouldUpdate(nextProps, changedProps)) {
                             broker.onBeforeUpdate(nextProps, changedProps)
                             this[PRIVATE.broker].props = nextProps
                             const ui = broker.render()
@@ -46,8 +48,11 @@ export function define<P extends object, E extends {[refName: string]: HTMLEleme
         }
 
         public connectedCallback() {
+            const broker = this[PRIVATE.broker]
+            const ui = broker.render()
+            broker.renderToDom(ui, this)
             if (this.isConnected) {
-                this[PRIVATE.broker].onMount()
+                broker.onMount()
             }
         }
 
