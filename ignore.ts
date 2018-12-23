@@ -14,7 +14,7 @@ export function define<P extends object, E extends {[refName: string]: HTMLEleme
         constructor() {
             super()
 
-            const broker = new declaration()
+            const broker = new declaration(this)
             Object.defineProperty(this, PRIVATE.broker, {
                 value: broker,
             })

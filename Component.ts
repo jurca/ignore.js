@@ -17,7 +17,7 @@ export interface IComponentStaticMembers<P extends object> {
 }
 
 export type ComponentDeclaration<P extends object, E extends {[refName: string]: HTMLElement}, R> =
-    IComponentStaticMembers<P> & {new(): IComponent<P, E, R>}
+    IComponentStaticMembers<P> & {new(node: HTMLElement): IComponent<P, E, R>}
 
 export type ComponentRenderer<R> = (renderResult: R, mountNode: HTMLElement) => void
 
