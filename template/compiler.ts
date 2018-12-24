@@ -68,6 +68,7 @@ export default function compile(template: ITemplateNode[]): Template {
                         }
                     }
                     element.appendChild(compileFragment(node.children, nodePath.concat(nodeIndex)))
+                    compiledFragment.appendChild(element)
                     break
 
                 case TemplateNodeType.PLACEHOLDER:
