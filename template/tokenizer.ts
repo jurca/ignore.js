@@ -70,6 +70,8 @@ export default function tokenize(inputStrings: string[]): IToken[] {
                         type: TokenType.ATTRIBUTE_VALUE,
                         value,
                     })
+                    tokenIndex += attributeMatch[0].length
+                    continue
                 } else if (tokenIndex === currentFullString.length) { // the value will be set by the placeholder
                     continue
                 } else {
