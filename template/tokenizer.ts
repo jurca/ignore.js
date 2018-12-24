@@ -6,16 +6,18 @@ export default function tokenize(inputStrings: string[]): IToken[] {
     let insideElement = false
     let currentAttributeDelimiter: null | '"' | '\'' = null
     let lastOpenedElementName = ''
-    while (stringIndex < inputStrings.length && tokenIndex < inputStrings[stringIndex].length) {
+    while (stringIndex < inputStrings.length && tokenIndex <= inputStrings[stringIndex].length) {
         const currentFullString = inputStrings[stringIndex]
         const currentString = currentFullString.substring(tokenIndex)
         if (!currentString) {
             stringIndex++
             tokenIndex = 0
-            result.push({
-                type: TokenType.PLACEHOLDER,
-                value: '',
-            })
+            if (stringIndex < inputStrings.length) {
+                result.push({
+                    type: TokenType.PLACEHOLDER,
+                    value: '',
+                })
+            }
             continue
         }
 
@@ -86,6 +88,7 @@ export default function tokenize(inputStrings: string[]): IToken[] {
                         })
                     }
                     tokenIndex = currentFullString.length
+                    continue
                 }
             }
 
@@ -96,6 +99,7 @@ export default function tokenize(inputStrings: string[]): IToken[] {
                 })
                 tokenIndex += currentString.indexOf('>') + 1
                 insideElement = false
+                continue
             }
 
             throw new Error(`Parsing failed in fragment #${stringIndex}, position ${tokenIndex}`)
@@ -132,7 +136,7 @@ export default function tokenize(inputStrings: string[]): IToken[] {
                         const whitespaceMatch = currentFullString.substring(tokenIndex).match(WHITESPACE_MATCHER)!
                         tokenIndex += whitespaceMatch[0].length
                     }
-                    const elementNameMatch = currentFullString.substring(tokenIndex).match(/^[\S+]/)
+                    const elementNameMatch = currentFullString.substring(tokenIndex).match(/^[^>\s]+/)
                     if (!elementNameMatch) {
                         throw new Error(`Missing element name in fragment #${stringIndex}, position ${tokenIndex}`)
                     }
@@ -146,13 +150,12 @@ export default function tokenize(inputStrings: string[]): IToken[] {
                     break
 
                 case TOKEN_MATCHER.ELEMENT_END:
-                    tokenIndex += bestMatch.length
                     const tokenEnd = currentFullString.indexOf('>', tokenIndex)
                     result.push({
                         type: TokenType.ELEMENT_END,
-                        value: currentFullString.substring(tokenIndex, tokenEnd).trim(),
+                        value: currentFullString.substring(tokenIndex + 2, tokenEnd).trim(),
                     })
-                    tokenIndex = tokenEnd + 1
+                    tokenIndex += bestMatch.length
                     break
             }
         }
@@ -171,7 +174,7 @@ export enum TokenType {
     COMMENT = 'TokenType.COMMENT',
     ELEMENT_START_OPEN = 'TokenType.ELEMENT_START_OPEN',
     ELEMENT_START_CLOSE = 'TokenType.ELEMENT_START_CLOSE',
-    ELEMENT_END = 'TokenType.ELEMENT_START_END',
+    ELEMENT_END = 'TokenType.ELEMENT_END',
     ATTRIBUTE_NAME = 'TokenType.ATTRIBUTE_NAME',
     ATTRIBUTE_VALUE = 'TokenType.ATTRIBUTE_VALUE',
     PLACEHOLDER = 'TokenType.PLACEHOLDER',
