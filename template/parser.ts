@@ -100,16 +100,16 @@ export default function parse(tokens: IToken[]): ITemplateNode[] {
     function isSettingAttribute(currentToken: IToken): boolean {
         const currentTokenIndex = tokens.indexOf(currentToken)
         const previousTokens = tokens.slice(0, currentTokenIndex).reverse()
-        const lastAttributeNameTokenIndex = previousTokens.length - previousTokens.findIndex(
+        const lastAttributeNameTokenIndex = previousTokens.findIndex(
             (token) => token.type === TokenType.ATTRIBUTE_NAME,
-        ) - 1
-        const lastElementStartCloseTokenIndex = previousTokens.length - previousTokens.findIndex(
+        )
+        const lastElementStartCloseTokenIndex = previousTokens.findIndex(
             (token) => token.type === TokenType.ELEMENT_START_CLOSE,
-        ) - 1
-        const lastElementEndTokenIndex = previousTokens.length - previousTokens.findIndex(
+        )
+        const lastElementEndTokenIndex = previousTokens.findIndex(
             (token) => token.type === TokenType.ELEMENT_END,
-        ) - 1
-        const lastSignificantTokenIndex = Math.max(
+        )
+        const lastSignificantTokenIndex = Math.min(
             lastAttributeNameTokenIndex,
             lastElementStartCloseTokenIndex,
             lastElementEndTokenIndex,
