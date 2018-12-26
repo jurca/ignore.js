@@ -109,11 +109,11 @@ export default function parse(tokens: IToken[]): ITemplateNode[] {
         const lastElementEndTokenIndex = previousTokens.findIndex(
             (token) => token.type === TokenType.ELEMENT_END,
         )
-        const lastSignificantTokenIndex = Math.min(
+        const lastSignificantTokenIndex = Math.min(...[
             lastAttributeNameTokenIndex,
             lastElementStartCloseTokenIndex,
             lastElementEndTokenIndex,
-        )
+        ].filter((index) => index > -1))
         return lastSignificantTokenIndex === lastAttributeNameTokenIndex && lastAttributeNameTokenIndex > -1
     }
 }
