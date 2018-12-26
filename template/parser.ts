@@ -43,8 +43,8 @@ export default function parse(tokens: IToken[]): ITemplateNode[] {
                 break
 
             case TokenType.ELEMENT_END:
-                if (token.value === peek(currentFragment).elementName) { // self-closing elemet
-                    break
+                if (token.value === (peek(currentFragment) && peek(currentFragment).elementName)) {
+                    break // self-closing elemet
                 }
 
                 if (!fragmentStack.length) {
