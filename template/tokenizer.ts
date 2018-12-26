@@ -25,16 +25,17 @@ export default function tokenize(inputStrings: string[]): IToken[] {
             if (currentString.includes(currentAttributeDelimiter)) {
                 const valueEndIndex = currentString.indexOf(currentAttributeDelimiter)
                 result.push({
-                    type: TokenType.ATTRIBUTE_NAME,
+                    type: TokenType.ATTRIBUTE_VALUE,
                     value: currentString.substring(0, valueEndIndex),
                 })
                 tokenIndex += valueEndIndex + 1
+                currentAttributeDelimiter = null
             } else {
                 result.push({
                     type: TokenType.ATTRIBUTE_VALUE,
                     value: currentString,
                 })
-                tokenIndex = currentString.length
+                tokenIndex += currentString.length
             }
             continue
         }
@@ -63,7 +64,9 @@ export default function tokenize(inputStrings: string[]): IToken[] {
                     tokenIndex += preValueWhitespaceMatch[0].length
                 }
 
-                const attributeMatch = currentFullString.substring(tokenIndex).match(/^(?:"([^"]*)"|'([^']*)'|(\S*))/)
+                const attributeMatch = currentFullString.substring(tokenIndex).match(
+                    /^(?:"([^"]*)"|'([^']*)'|([^'"\s]+))/,
+                )
                 if (attributeMatch) {
                     const value = attributeMatch[1] || attributeMatch[2] || attributeMatch[3]
                     result.push({
