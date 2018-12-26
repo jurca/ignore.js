@@ -1,5 +1,5 @@
-import compiler from './compiler'
-import parser from './parser'
+import compiler from './compiler.js'
+import parser from './parser.js'
 import Template from './Template.js'
 import tokenizer from './tokenizer.js'
 
