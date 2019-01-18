@@ -1,15 +1,22 @@
+import {scheduleUpdate, update} from './ignore.js'
+
 export interface IComponentStaticProps<Props, Attributes, DomReferences> {
   useShadowDom?: boolean
-  is: string
+  name: string
+  observedAttributes?: Array<keyof Attributes>
   props?: Array<keyof Props>
 
   new(): Component<Props, Attributes, DomReferences>
 }
 
 export default class Component<Props extends {}, Attributes extends {}, DomReferences extends {}> extends HTMLElement {
-  public props: Props
-  public attrs: Attributes
-  public refs: DomReferences
+  public static readonly observedAttributes: string[] = []
+
+  public props: Props = {} as Props
+  public attrs: Attributes = {} as Attributes
+  public refs: DomReferences = {} as DomReferences
+  public pendingProps: Props = {} as Props
+  public pendingAttrs: Attributes = {} as Attributes
 
   constructor() {
     super()
@@ -21,47 +28,54 @@ export default class Component<Props extends {}, Attributes extends {}, DomRefer
       this.attachShadow({mode: 'open'})
     }
 
-    const instance = this
-
-    this.props = {} as Props
-    this.attrs = new Proxy(Object.create(null), {
-      has(target: any, propertyKey: PropertyKey): boolean {
-        if (typeof propertyKey !== 'string') {
-          throw new TypeError(`The attribute name must be a string, ${propertyKey.toString()} was provided`)
-        }
-        return (instance as HTMLElement).hasAttribute(propertyKey)
-      },
-      get(target: any, propertyKey: PropertyKey, receiver: any): any {
-        if (typeof propertyKey !== 'string') {
-          throw new TypeError(`The attribute name must be a string, ${propertyKey.toString()} was provided`)
-        }
-        (instance as HTMLElement).getAttribute(propertyKey)
-      },
-      set(target: any, propertyKey: PropertyKey, value: any, receiver: any): boolean {
-        if (typeof propertyKey !== 'string') {
-          throw new TypeError(`The attribute name must be a string, ${propertyKey.toString()} was provided`)
-        }
-        (instance as HTMLElement).setAttribute(propertyKey, value)
-        return true
-      },
-      ownKeys(target: any): PropertyKey[] {
-        return Array.from((instance as HTMLElement).attributes).map((attribute) => attribute.name)
-      },
-    })
-    this.refs = new Proxy(Object.create(null), {
-      has(target: any, propertyKey: PropertyKey): boolean {
-        return !!instance.refs[propertyKey]
-      },
-      get(target: any, propertyKey: PropertyKey, receiver: any): any {
-        if (typeof propertyKey !== 'string') {
-          return null
-        }
-        return (instance.shadowRoot || instance as HTMLElement).querySelector(
-          `[ref="${propertyKey.replace('"', '\\"')}"]`,
-        )
-      },
-    })
+    for (const propName of (this.constructor as IComponentStaticProps<Props, Attributes, DomReferences>).props || []) {
+      Object.defineProperty(this, propName, {
+        enumerable: true,
+        set(value) {
+          if (this.isConnected) {
+            if (value !== this.props[propName]) {
+              this.pendingProps[propName] = value
+              scheduleUpdate(this)
+            }
+          } else {
+            this.props[propName] = value
+          }
+        },
+        get() {
+          return this.props[propName]
+        },
+      })
+    }
   }
 
-  public render(): any {}
+  public render(): any {} // tslint:disable-line no-empty
+
+  public connectedCallback() {
+    if (!this.isConnected) {
+      return
+    }
+
+    for (const attribute of Array.from(this.attributes)) {
+      this.attrs[attribute.name] = attribute.value
+    }
+
+    update(this)
+
+    const referencedElements = Array.from((this.shadowRoot || this).querySelectorAll('[ref]'))
+    for (const referencedElement of referencedElements) {
+      this.refs[referencedElement.getAttribute('ref')!] = referencedElement
+    }
+  }
+
+  public disconnectedCallback() {} // tslint:disable-line no-empty
+
+  public adoptedCallback() {} // tslint:disable-line no-empty
+
+  public attributeChangedCallback(name, oldValue, newValue): void {
+    // the callback does get called even if the attribute is set to its current value
+    if (this.isConnected && newValue !== oldValue) {
+      this.pendingAttrs[name] = newValue
+      scheduleUpdate(this)
+    }
+  }
 }
