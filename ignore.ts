@@ -24,7 +24,7 @@ export const update = <Props, Attributes, DomReferences>(
   // TODO
 }
 
-const componentsScheduledForUpdate = new Set<Component<any, any, any>>()
+let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
 let scheduledUpdateId: null | number = null
 
 export const scheduleUpdate = <Props, Attributes, DomReferences>(
@@ -34,12 +34,15 @@ export const scheduleUpdate = <Props, Attributes, DomReferences>(
 
   if (!scheduledUpdateId && renderer) {
     scheduledUpdateId = setTimeout(() => {
-      scheduledUpdateId = null
-      const components = [...componentsScheduledForUpdate]
-      componentsScheduledForUpdate.clear()
-      for (component of components) {
-        update(component)
+      while (componentsScheduledForUpdate.size) {
+        const componentsToUpdate = componentsScheduledForUpdate
+        componentsScheduledForUpdate = new Set()
+        for (const component of componentsToUpdate) {
+          update(component)
+        }
       }
-    })
+
+      scheduledUpdateId = null
+    }, 0)
   }
 }
