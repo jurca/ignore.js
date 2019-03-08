@@ -8,7 +8,9 @@ export const setRenderer = (newRenderer: Renderer) => {
   renderer = newRenderer
 
   if (!scheduledUpdateId && componentsScheduledForUpdate.size) {
-    // TODO
+    scheduledUpdateId = -1
+    updatePendingComponents()
+    scheduledUpdateId = null
   }
 }
 
@@ -34,15 +36,18 @@ export const scheduleUpdate = <Props, Attributes, DomReferences>(
 
   if (!scheduledUpdateId && renderer) {
     scheduledUpdateId = setTimeout(() => {
-      while (componentsScheduledForUpdate.size) {
-        const componentsToUpdate = componentsScheduledForUpdate
-        componentsScheduledForUpdate = new Set()
-        for (const component of componentsToUpdate) {
-          update(component)
-        }
-      }
-
+      updatePendingComponents()
       scheduledUpdateId = null
     }, 0)
+  }
+}
+
+function updatePendingComponents(): void {
+  while (componentsScheduledForUpdate.size) {
+    const componentsToUpdate = componentsScheduledForUpdate
+    componentsScheduledForUpdate = new Set()
+    for (const component of componentsToUpdate) {
+      update(component)
+    }
   }
 }
