@@ -1,34 +1,36 @@
 import {scheduleUpdate, update} from './ignore.js'
 
-export interface IComponentStaticProps<Props, Attributes, DomReferences> {
+export interface IComponentStaticProps<Properties, Attributes, DomReferences> {
   useShadowDom?: boolean
   name: string
   observedAttributes?: Array<keyof Attributes>
-  props?: Array<keyof Props>
+  props?: Array<keyof Properties>
 
-  new(): Component<Props, Attributes, DomReferences>
+  new(): Component<Properties, Attributes, DomReferences>
 }
 
-export default class Component<Props extends {}, Attributes extends {}, DomReferences extends {}> extends HTMLElement {
+export default class Component<
+  Properties extends {},
+  Attributes extends {},
+  DomReferences extends {},
+> extends HTMLElement {
   public static readonly observedAttributes: string[] = []
 
-  public props: Props = {} as Props
+  public props: Properties = {} as Properties
   public attrs: Attributes = {} as Attributes
   public refs: DomReferences = {} as DomReferences
-  public pendingProps: Props = {} as Props
+  public pendingProps: Properties = {} as Properties
   public pendingAttrs: Attributes = {} as Attributes
 
   constructor() {
     super()
 
-    if (
-      'useShadowDom' in this.constructor &&
-      (this.constructor as IComponentStaticProps<Props, Attributes, DomReferences>).useShadowDom
-    ) {
+    const componentClass = this.constructor as IComponentStaticProps<Properties, Attributes, DomReferences>
+    if (componentClass.useShadowDom) {
       this.attachShadow({mode: 'open'})
     }
 
-    for (const propName of (this.constructor as IComponentStaticProps<Props, Attributes, DomReferences>).props || []) {
+    for (const propName of componentClass.props || []) {
       Object.defineProperty(this, propName, {
         enumerable: true,
         set(value) {

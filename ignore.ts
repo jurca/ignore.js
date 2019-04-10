@@ -14,23 +14,20 @@ export const setRenderer = (newRenderer: Renderer) => {
   }
 }
 
-export const define = <Props, Attributes, DomReferences>(
-  customElement: IComponentStaticProps<Props, Attributes, DomReferences>,
+export const define = <Properties, Attributes, DomReferences>(
+  customElement: IComponentStaticProps<Properties, Attributes, DomReferences>,
 ): void => {
   customElements.define(customElement.name, customElement)
 }
 
-export const update = <Props, Attributes, DomReferences>(
-  component: Component<Props, Attributes, DomReferences>,
+export const update = <Properties, Attributes, DomReferences>(
+  component: Component<Properties, Attributes, DomReferences>,
 ): void => {
   // TODO
 }
 
-let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
-let scheduledUpdateId: null | number = null
-
-export const scheduleUpdate = <Props, Attributes, DomReferences>(
-  component: Component<Props, Attributes, DomReferences>,
+export const scheduleUpdate = <Properties, Attributes, DomReferences>(
+  component: Component<Properties, Attributes, DomReferences>,
 ): void => {
   componentsScheduledForUpdate.add(component)
 
