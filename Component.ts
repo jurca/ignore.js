@@ -62,11 +62,6 @@ export default class Component<
     }
 
     update(this)
-
-    const referencedElements = Array.from((this.shadowRoot || this).querySelectorAll('[ref]'))
-    for (const referencedElement of referencedElements) {
-      this.refs[referencedElement.getAttribute('ref')!] = referencedElement
-    }
   }
 
   public beforeUpdate(nextProps: Properties, nextAttributes: Attributes): void {} // tslint:disable-line no-empty

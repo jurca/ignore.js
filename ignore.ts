@@ -47,6 +47,11 @@ export const update = <Properties, Attributes, DomReferences>(
   component.pendingProps = {} as Properties
   component.pendingAttrs = {} as Attributes
   component.afterUpdate(previousProps, previousAttributes)
+
+  const referencedElements = Array.from((component.shadowRoot || component).querySelectorAll('[ref]'))
+  for (const referencedElement of referencedElements) {
+    component.refs[referencedElement.getAttribute('ref')!] = referencedElement
+  }
 }
 
 export const scheduleUpdate = <Properties, Attributes, DomReferences>(
