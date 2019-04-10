@@ -37,7 +37,8 @@ export const update = <Properties, Attributes, DomReferences>(
     component.beforeUpdate(component.pendingProps, component.pendingAttrs)
   }
 
-  // TODO: render
+  const ui = component.render()
+  renderer(component.shadowRoot || component, ui)
 
   const previousProps = component.props
   const previousAttributes = component.attrs
