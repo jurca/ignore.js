@@ -40,7 +40,7 @@ export default class Component<
               scheduleUpdate(this)
             }
           } else {
-            this.props[propName] = value
+            this.pendingProps[propName] = value
           }
         },
         get() {
@@ -58,7 +58,7 @@ export default class Component<
     }
 
     for (const attribute of Array.from(this.attributes)) {
-      this.attrs[attribute.name] = attribute.value
+      this.pendingAttrs[attribute.name] = attribute.value
     }
 
     update(this)
@@ -68,6 +68,10 @@ export default class Component<
       this.refs[referencedElement.getAttribute('ref')!] = referencedElement
     }
   }
+
+  public beforeUpdate(nextProps: Properties, nextAttributes: Attributes): void {} // tslint:disable-line no-empty
+
+  public afterUpdate(previousProps: Properties, previousAttributes: Attributes): void {} // tslint:disable-line no-empty
 
   public disconnectedCallback(): void {} // tslint:disable-line no-empty
 

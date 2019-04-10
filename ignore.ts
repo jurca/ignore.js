@@ -2,7 +2,10 @@ import Component, {IComponentStaticProps} from './Component.js'
 
 export type Renderer = (container: Element | ShadowRoot, ui: any) => void
 
+const livingComponents = new WeakSet<Component<any, any, any>>()
 let renderer: null | Renderer = null
+let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
+let scheduledUpdateId: null | number = null
 
 export const setRenderer = (newRenderer: Renderer) => {
   renderer = newRenderer
@@ -23,7 +26,26 @@ export const define = <Properties, Attributes, DomReferences>(
 export const update = <Properties, Attributes, DomReferences>(
   component: Component<Properties, Attributes, DomReferences>,
 ): void => {
-  // TODO
+  if (!renderer) {
+    scheduleUpdate(component)
+    return
+  }
+
+  if (!livingComponents.has(component)) {
+    livingComponents.add(component)
+  } else {
+    component.beforeUpdate(component.pendingProps, component.pendingAttrs)
+  }
+
+  // TODO: render
+
+  const previousProps = component.props
+  const previousAttributes = component.attrs
+  component.props = component.pendingProps
+  component.attrs = component.pendingAttrs
+  component.pendingProps = {} as Properties
+  component.pendingAttrs = {} as Attributes
+  component.afterUpdate(previousProps, previousAttributes)
 }
 
 export const scheduleUpdate = <Properties, Attributes, DomReferences>(
