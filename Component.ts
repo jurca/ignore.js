@@ -58,7 +58,7 @@ export default class Component<
     }
 
     for (const attribute of Array.from(this.attributes)) {
-      this.pendingAttrs[attribute.name] = attribute.value
+      (this.pendingAttrs as any)[attribute.name] = attribute.value
     }
 
     update(this)
@@ -72,10 +72,10 @@ export default class Component<
 
   public adoptedCallback(): void {} // tslint:disable-line no-empty
 
-  public attributeChangedCallback(name, oldValue, newValue): void {
+  public attributeChangedCallback(name: string, oldValue: null | string, newValue: null | string): void {
     // the callback does get called even if the attribute is set to its current value
     if (this.isConnected && newValue !== oldValue) {
-      this.pendingAttrs[name] = newValue
+      (this.pendingAttrs as any)[name] = newValue
       scheduleUpdate(this)
     }
   }

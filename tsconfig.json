@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
         "allowUnreachableCode": false,
-        "strictPropertyInitialization": true,
-        "strictNullChecks": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "strict": true,
         "target": "esnext"
     }
 }

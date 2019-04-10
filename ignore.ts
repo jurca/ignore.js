@@ -50,7 +50,7 @@ export const update = <Properties, Attributes, DomReferences>(
 
   const referencedElements = Array.from((component.shadowRoot || component).querySelectorAll('[ref]'))
   for (const referencedElement of referencedElements) {
-    component.refs[referencedElement.getAttribute('ref')!] = referencedElement
+    (component.refs as any)[referencedElement.getAttribute('ref')!] = referencedElement
   }
 }
 
