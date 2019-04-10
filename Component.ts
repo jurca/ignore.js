@@ -50,7 +50,7 @@ export default class Component<Props extends {}, Attributes extends {}, DomRefer
 
   public render(): any {} // tslint:disable-line no-empty
 
-  public connectedCallback() {
+  public connectedCallback(): void {
     if (!this.isConnected) {
       return
     }
@@ -67,9 +67,9 @@ export default class Component<Props extends {}, Attributes extends {}, DomRefer
     }
   }
 
-  public disconnectedCallback() {} // tslint:disable-line no-empty
+  public disconnectedCallback(): void {} // tslint:disable-line no-empty
 
-  public adoptedCallback() {} // tslint:disable-line no-empty
+  public adoptedCallback(): void {} // tslint:disable-line no-empty
 
   public attributeChangedCallback(name, oldValue, newValue): void {
     // the callback does get called even if the attribute is set to its current value
