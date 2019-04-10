@@ -21,7 +21,7 @@
     "ui"
   ],
   "author": "Martin Jurča <mjurca@centrum.cz>",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/jurca/ignore.js/issues"
   },
