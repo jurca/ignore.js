@@ -42,8 +42,14 @@ export const update = <Properties, Attributes, DomReferences>(
 
   const previousProps = component.props
   const previousAttributes = component.attrs
-  component.props = component.pendingProps
-  component.attrs = component.pendingAttrs
+  component.props = {
+    ...component.props,
+    ...component.pendingProps,
+  }
+  component.attrs = {
+    ...component.attrs,
+    ...component.pendingAttrs,
+  }
   component.pendingProps = {} as Properties
   component.pendingAttrs = {} as Attributes
   component.afterUpdate(previousProps, previousAttributes)
