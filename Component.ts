@@ -1,4 +1,4 @@
-import {scheduleUpdate, update} from './ignore.js'
+import {scheduleUpdate, update} from './runtime.js'
 
 export interface IComponentStaticProps<Properties, Attributes, DomReferences> {
   useShadowDom?: boolean
