@@ -1,4 +1,9 @@
-import {scheduleUpdate, update} from './runtime.js'
+import {
+  packagePrivateAfterRenderMethod,
+  packagePrivateGetPendingDataMethods,
+  scheduleUpdate,
+  update,
+} from './runtime.js'
 
 export interface IComponentStaticProps<Properties, Attributes, DomReferences> {
   useShadowDom?: boolean
@@ -9,6 +14,11 @@ export interface IComponentStaticProps<Properties, Attributes, DomReferences> {
   new(): Component<Properties, Attributes, DomReferences>
 }
 
+// This is simpler than using weak maps
+const privateRefs = Symbol('ref')
+const privatePendingProps = Symbol('pendingProps')
+const privatePendingAttrs = Symbol('pendingAttrs')
+
 export default class Component<
   Properties extends {},
   Attributes extends {},
@@ -18,9 +28,9 @@ export default class Component<
 
   public props: Properties = {} as Properties
   public attrs: Attributes = {} as Attributes
-  public refs: DomReferences = {} as DomReferences
-  public pendingProps: Properties = {} as Properties
-  public pendingAttrs: Attributes = {} as Attributes
+  private [privatePendingProps]: Pick<Properties, keyof Properties> = {} as Pick<Properties, keyof Properties>
+  private [privatePendingAttrs]: Pick<Attributes, keyof Attributes> = {} as Pick<Attributes, keyof Attributes>
+  private [privateRefs]: null | Pick<DomReferences, keyof DomReferences> = null
 
   constructor() {
     super()
@@ -36,11 +46,11 @@ export default class Component<
         set(value) {
           if (this.isConnected) {
             if (value !== this.props[propName]) {
-              this.pendingProps[propName] = value
+              this[privatePendingProps][propName] = value
               scheduleUpdate(this)
             }
           } else {
-            this.pendingProps[propName] = value
+            this[privatePendingProps][propName] = value
           }
         },
         get() {
@@ -58,7 +68,7 @@ export default class Component<
     }
 
     for (const attribute of Array.from(this.attributes)) {
-      (this.pendingAttrs as any)[attribute.name] = attribute.value
+      (this.attrs as any)[attribute.name] = attribute.value
     }
 
     update(this)
@@ -75,8 +85,41 @@ export default class Component<
   public attributeChangedCallback(name: string, oldValue: null | string, newValue: null | string): void {
     // the callback does get called even if the attribute is set to its current value
     if (this.isConnected && newValue !== oldValue) {
-      (this.pendingAttrs as any)[name] = newValue
+      (this[privatePendingAttrs] as any)[name] = newValue
       scheduleUpdate(this)
     }
+  }
+
+  public [packagePrivateGetPendingDataMethods](): {
+    attrs: Pick<Attributes, keyof Attributes>,
+    props: Pick<Properties, keyof Properties>,
+  } {
+    return {
+      attrs: this[privatePendingAttrs],
+      props: this[privatePendingProps],
+    }
+  }
+
+  public [packagePrivateAfterRenderMethod](): void {
+    this.props = {
+      ...this.props,
+      ...this[privatePendingProps],
+    }
+    this.attrs = {
+      ...this.attrs,
+      ...this[privatePendingAttrs],
+    }
+    this[privatePendingProps] = {} as Pick<Properties, keyof Properties>
+    this[privatePendingAttrs] = {} as Pick<Attributes, keyof Attributes>
+
+    this[privateRefs] = {} as Pick<DomReferences, keyof DomReferences>
+    const referencedElements = Array.from((this.shadowRoot || this).querySelectorAll('[ref]'))
+    for (const referencedElement of referencedElements) {
+      (this[privateRefs] as any)[referencedElement.getAttribute('ref')!] = referencedElement
+    }
+  }
+
+  protected refs(): Pick<DomReferences, keyof DomReferences> {
+    return this[privateRefs] || {} as Pick<DomReferences, keyof DomReferences>
   }
 }

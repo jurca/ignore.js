@@ -7,6 +7,9 @@ let renderer: null | Renderer = null
 let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
 let scheduledUpdateId: null | number = null
 
+export const packagePrivateGetPendingDataMethods = Symbol('getPendingData')
+export const packagePrivateAfterRenderMethod = Symbol('afterRender')
+
 export const setRenderer = (newRenderer: Renderer) => {
   renderer = newRenderer
 
@@ -34,30 +37,25 @@ export const update = <Properties, Attributes, DomReferences>(
   if (!livingComponents.has(component)) {
     livingComponents.add(component)
   } else {
-    component.beforeUpdate(component.pendingProps, component.pendingAttrs)
+    const pendingData = component[packagePrivateGetPendingDataMethods]()
+    const pendingProps = {
+      ...component.props,
+      ...pendingData.props,
+    }
+    const pendingAttrs = {
+      ...component.attrs,
+      ...pendingData.attrs,
+    }
+    component.beforeUpdate(pendingProps, pendingAttrs)
   }
 
   const ui = component.render()
   renderer(component.shadowRoot || component, ui)
-
   const previousProps = component.props
   const previousAttributes = component.attrs
-  component.props = {
-    ...component.props,
-    ...component.pendingProps,
-  }
-  component.attrs = {
-    ...component.attrs,
-    ...component.pendingAttrs,
-  }
-  component.pendingProps = {} as Properties
-  component.pendingAttrs = {} as Attributes
-  component.afterUpdate(previousProps, previousAttributes)
+  component[packagePrivateAfterRenderMethod]()
 
-  const referencedElements = Array.from((component.shadowRoot || component).querySelectorAll('[ref]'))
-  for (const referencedElement of referencedElements) {
-    (component.refs as any)[referencedElement.getAttribute('ref')!] = referencedElement
-  }
+  component.afterUpdate(previousProps, previousAttributes)
 }
 
 export const scheduleUpdate = <Properties, Attributes, DomReferences>(
