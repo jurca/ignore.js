@@ -34,9 +34,7 @@ export const update = <Properties, Attributes, DomReferences>(
     return
   }
 
-  if (!livingComponents.has(component)) {
-    livingComponents.add(component)
-  } else {
+  if (livingComponents.has(component)) {
     const pendingData = component[packagePrivateGetPendingDataMethods]()
     const pendingProps = {
       ...component.props,
@@ -55,7 +53,10 @@ export const update = <Properties, Attributes, DomReferences>(
   const previousAttributes = component.attrs
   component[packagePrivateAfterRenderMethod]()
 
-  component.afterUpdate(previousProps, previousAttributes)
+  if (livingComponents.has(component)) {
+    component.afterUpdate(previousProps, previousAttributes)
+  }
+  livingComponents.add(component)
 }
 
 export const scheduleUpdate = <Properties, Attributes, DomReferences>(
