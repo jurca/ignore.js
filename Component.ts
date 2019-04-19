@@ -119,8 +119,22 @@ export default class Component<
   protected refs(): Pick<DomReferences, keyof DomReferences> {
     const refs = this[privateRefs] || {} as Pick<DomReferences, keyof DomReferences>
     if (!this[privateRefs]) {
-      const referencedElements = Array.from((this.shadowRoot || this).querySelectorAll('[ref]'))
+      const uiRoot = this.shadowRoot || this
+      const referencedElements = Array.from(uiRoot.querySelectorAll('[ref]'))
+      referencedElementsCycle:
       for (const referencedElement of referencedElements) {
+        let elementOwner = referencedElement.parentNode
+        while (elementOwner && elementOwner !== uiRoot) {
+          if (
+            elementOwner.nodeType === Node.ELEMENT_NODE &&
+            !(elementOwner as Element).shadowRoot &&
+            elementOwner.nodeName.includes('-')
+          ) {
+            // We do not want to pierce the encapsulation of components not utilizing shadow DOM
+            continue referencedElementsCycle
+          }
+          elementOwner = elementOwner.parentNode
+        }
         (this[privateRefs] as any)[referencedElement.getAttribute('ref')!] = referencedElement
       }
       this[privateRefs] = refs
