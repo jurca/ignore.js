@@ -14,7 +14,8 @@ export interface IComponentStaticProps<Properties, Attributes, DomReferences> {
   new(): Component<Properties, Attributes, DomReferences>
 }
 
-// This is simpler than using weak maps
+// This is simpler than using weak maps, even though these are not hard privates with full encapsulation... it's good
+// enough here.
 const privateRefs = Symbol('ref')
 const privatePendingProps = Symbol('pendingProps')
 const privatePendingAttrs = Symbol('pendingAttrs')
