@@ -112,14 +112,19 @@ export default class Component<
     this[privatePendingProps] = {} as Pick<Properties, keyof Properties>
     this[privatePendingAttrs] = {} as Pick<Attributes, keyof Attributes>
 
-    this[privateRefs] = {} as Pick<DomReferences, keyof DomReferences>
-    const referencedElements = Array.from((this.shadowRoot || this).querySelectorAll('[ref]'))
-    for (const referencedElement of referencedElements) {
-      (this[privateRefs] as any)[referencedElement.getAttribute('ref')!] = referencedElement
-    }
+    this[privateRefs] = null
   }
 
   protected refs(): Pick<DomReferences, keyof DomReferences> {
-    return this[privateRefs] || {} as Pick<DomReferences, keyof DomReferences>
+    const refs = this[privateRefs] || {} as Pick<DomReferences, keyof DomReferences>
+    if (!this[privateRefs]) {
+      const referencedElements = Array.from((this.shadowRoot || this).querySelectorAll('[ref]'))
+      for (const referencedElement of referencedElements) {
+        (this[privateRefs] as any)[referencedElement.getAttribute('ref')!] = referencedElement
+      }
+      this[privateRefs] = refs
+    }
+
+    return refs
   }
 }
