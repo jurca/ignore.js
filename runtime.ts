@@ -75,7 +75,9 @@ function updatePendingComponents(): void {
     const componentsToUpdate = componentsScheduledForUpdate
     componentsScheduledForUpdate = new Set()
     for (const component of componentsToUpdate) {
-      updateComponent(component)
+      if (component.isConnected) {
+        updateComponent(component)
+      }
     }
   }
 }
