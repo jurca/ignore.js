@@ -1,7 +1,6 @@
 import {
   packagePrivateAfterRenderMethod,
   packagePrivateGetPendingDataMethods,
-  scheduleUpdate,
   update,
 } from './runtime.js'
 
@@ -48,7 +47,7 @@ export default class Component<
           if (this.isConnected) {
             if (value !== this.props[propName]) {
               this[privatePendingProps][propName] = value
-              scheduleUpdate(this)
+              update(this)
             }
           } else {
             this[privatePendingProps][propName] = value
@@ -87,7 +86,7 @@ export default class Component<
     // the callback does get called even if the attribute is set to its current value
     if (this.isConnected && newValue !== oldValue) {
       (this[privatePendingAttrs] as any)[name] = newValue
-      scheduleUpdate(this)
+      update(this)
     }
   }
 

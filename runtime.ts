@@ -5,19 +5,14 @@ export type Renderer = (container: Element | ShadowRoot, ui: any) => void
 const livingComponents = new WeakSet<Component<any, any, any>>()
 let renderer: null | Renderer = null
 let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
-let scheduledUpdateId: null | number = null
+let updateLock: boolean = false
 
 export const packagePrivateGetPendingDataMethods = Symbol('getPendingData')
 export const packagePrivateAfterRenderMethod = Symbol('afterRender')
 
 export const setRenderer = (newRenderer: Renderer) => {
   renderer = newRenderer
-
-  if (!scheduledUpdateId && componentsScheduledForUpdate.size) {
-    scheduledUpdateId = -1
-    updatePendingComponents()
-    scheduledUpdateId = null
-  }
+  updatePendingComponents()
 }
 
 export const define = <Properties, Attributes, DomReferences>(
@@ -29,11 +24,24 @@ export const define = <Properties, Attributes, DomReferences>(
 export const update = <Properties, Attributes, DomReferences>(
   component: Component<Properties, Attributes, DomReferences>,
 ): void => {
-  if (!renderer) {
-    scheduleUpdate(component)
+  if (!renderer || updateLock) {
+    componentsScheduledForUpdate.add(component)
     return
   }
 
+  updateLock = true
+  try {
+    updateComponent(component)
+  } finally {
+    updateLock = false
+  }
+
+  updatePendingComponents()
+}
+
+function updateComponent<Properties, Attributes, DomReferences>(
+  component: Component<Properties, Attributes, DomReferences>,
+): void {
   if (livingComponents.has(component)) {
     const pendingData = component[packagePrivateGetPendingDataMethods]()
     const pendingProps = {
@@ -48,7 +56,7 @@ export const update = <Properties, Attributes, DomReferences>(
   }
 
   const ui = component.render()
-  renderer(component.shadowRoot || component, ui)
+  renderer!(component.shadowRoot || component, ui)
   const previousProps = component.props
   const previousAttributes = component.attrs
   component[packagePrivateAfterRenderMethod]()
@@ -59,25 +67,12 @@ export const update = <Properties, Attributes, DomReferences>(
   livingComponents.add(component)
 }
 
-export const scheduleUpdate = <Properties, Attributes, DomReferences>(
-  component: Component<Properties, Attributes, DomReferences>,
-): void => {
-  componentsScheduledForUpdate.add(component)
-
-  if (!scheduledUpdateId && renderer) {
-    scheduledUpdateId = setTimeout(() => {
-      updatePendingComponents()
-      scheduledUpdateId = null
-    }, 0)
-  }
-}
-
 function updatePendingComponents(): void {
   while (componentsScheduledForUpdate.size) {
     const componentsToUpdate = componentsScheduledForUpdate
     componentsScheduledForUpdate = new Set()
     for (const component of componentsToUpdate) {
-      update(component)
+      updateComponent(component)
     }
   }
 }
