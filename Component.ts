@@ -100,15 +100,9 @@ export default class Component<
     }
   }
 
-  public [packagePrivateAfterRenderMethod](): void {
-    this.props = {
-      ...this.props,
-      ...this[privatePendingProps],
-    }
-    this.attrs = {
-      ...this.attrs,
-      ...this[privatePendingAttrs],
-    }
+  public [packagePrivateAfterRenderMethod](newProps: Properties, newAttrs: Attributes): void {
+    this.props = newProps
+    this.attrs = newAttrs
     this[privatePendingProps] = {} as Pick<Properties, keyof Properties>
     this[privatePendingAttrs] = {} as Pick<Attributes, keyof Attributes>
 

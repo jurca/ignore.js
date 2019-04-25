@@ -62,7 +62,7 @@ function updateComponent<Properties, Attributes, DomReferences>(
   renderer!(component.shadowRoot || component, ui)
   const previousProps = component.props
   const previousAttributes = component.attrs
-  component[packagePrivateAfterRenderMethod]()
+  component[packagePrivateAfterRenderMethod](pendingProps, pendingAttrs)
 
   if (livingComponents.has(component)) {
     component.afterUpdate(previousProps, previousAttributes)
