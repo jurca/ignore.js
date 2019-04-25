@@ -115,7 +115,7 @@ export default class Component<
     this[privateRefs] = null
   }
 
-  protected refs(): Pick<DomReferences, keyof DomReferences> {
+  protected get refs(): Pick<DomReferences, keyof DomReferences> {
     const refs = this[privateRefs] || {} as Pick<DomReferences, keyof DomReferences>
     if (!this[privateRefs]) {
       const uiRoot = this.shadowRoot || this
