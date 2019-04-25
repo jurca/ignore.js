@@ -74,10 +74,6 @@ export default class Component<
       return
     }
 
-    for (const attribute of Array.from(this.attributes)) {
-      (this.attrs as any)[attribute.name] = attribute.value
-    }
-
     update(this)
   }
 
