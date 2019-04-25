@@ -7,7 +7,7 @@ let renderer: null | Renderer = null
 let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
 let updateLock: boolean = false
 
-export const packagePrivateGetPendingDataMethods = Symbol('getPendingData')
+export const packagePrivateGetPendingDataMethod = Symbol('getPendingData')
 export const packagePrivateAfterRenderMethod = Symbol('afterRender')
 
 export const setRenderer = (newRenderer: Renderer) => {
@@ -43,7 +43,7 @@ function updateComponent<Properties, Attributes, DomReferences>(
   component: Component<Properties, Attributes, DomReferences>,
 ): void {
   if (livingComponents.has(component)) {
-    const pendingData = component[packagePrivateGetPendingDataMethods]()
+    const pendingData = component[packagePrivateGetPendingDataMethod]()
     const pendingProps = {
       ...component.props,
       ...pendingData.props,

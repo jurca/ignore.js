@@ -1,6 +1,6 @@
 import {
   packagePrivateAfterRenderMethod,
-  packagePrivateGetPendingDataMethods,
+  packagePrivateGetPendingDataMethod,
   update,
 } from './runtime.js'
 
@@ -90,7 +90,7 @@ export default class Component<
     }
   }
 
-  public [packagePrivateGetPendingDataMethods](): {
+  public [packagePrivateGetPendingDataMethod](): {
     attrs: Pick<Attributes, keyof Attributes>,
     props: Pick<Properties, keyof Properties>,
   } {
