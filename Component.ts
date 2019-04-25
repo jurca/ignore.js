@@ -58,6 +58,13 @@ export default class Component<
         },
       })
     }
+
+    for (const privateSymbol of [privatePendingProps, privatePendingAttrs, privateRefs]) {
+      Object.defineProperty(this, privateSymbol, {
+        configurable: false,
+        enumerable: false,
+      })
+    }
   }
 
   public render(): any {} // tslint:disable-line no-empty
