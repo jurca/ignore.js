@@ -42,17 +42,20 @@ export const update = <Properties, Attributes, DomReferences>(
 function updateComponent<Properties, Attributes, DomReferences>(
   component: Component<Properties, Attributes, DomReferences>,
 ): void {
+  const pendingData = component[packagePrivateGetPendingDataMethod]()
+  const pendingProps = {
+    ...component.props,
+    ...pendingData.props,
+  }
+  const pendingAttrs = {
+    ...component.attrs,
+    ...pendingData.attrs,
+  }
   if (livingComponents.has(component)) {
-    const pendingData = component[packagePrivateGetPendingDataMethod]()
-    const pendingProps = {
-      ...component.props,
-      ...pendingData.props,
-    }
-    const pendingAttrs = {
-      ...component.attrs,
-      ...pendingData.attrs,
-    }
     component.beforeUpdate(pendingProps, pendingAttrs)
+  } else {
+    component.props = pendingProps
+    component.attrs = pendingAttrs
   }
 
   const ui = component.render()
