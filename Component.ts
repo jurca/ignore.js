@@ -131,7 +131,7 @@ export default class Component<
           }
           elementOwner = elementOwner.parentNode
         }
-        (this[privateRefs] as any)[referencedElement.getAttribute('ref')!] = referencedElement
+        (refs as any)[referencedElement.getAttribute('ref')!] = referencedElement
       }
       this[privateRefs] = refs
     }
