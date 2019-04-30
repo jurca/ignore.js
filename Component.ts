@@ -28,9 +28,9 @@ export default class Component<
 
   public props: Properties = {} as Properties
   public attrs: Attributes = {} as Attributes
-  private [privatePendingProps]: Pick<Properties, keyof Properties> = {} as Pick<Properties, keyof Properties>
-  private [privatePendingAttrs]: Pick<Attributes, keyof Attributes> = {} as Pick<Attributes, keyof Attributes>
-  private [privateRefs]: null | Pick<DomReferences, keyof DomReferences> = null
+  private [privatePendingProps]: Partial<Properties> = {}
+  private [privatePendingAttrs]: Partial<Attributes> = {}
+  private [privateRefs]: null | Partial<DomReferences> = null
 
   constructor() {
     super()
@@ -94,8 +94,8 @@ export default class Component<
   }
 
   public [packagePrivateGetPendingDataMethod](): {
-    attrs: Pick<Attributes, keyof Attributes>,
-    props: Pick<Properties, keyof Properties>,
+    attrs: Partial<Attributes>,
+    props: Partial<Properties>,
   } {
     return {
       attrs: this[privatePendingAttrs],
@@ -112,8 +112,8 @@ export default class Component<
     this[privateRefs] = null
   }
 
-  protected get refs(): Pick<DomReferences, keyof DomReferences> {
-    const refs = this[privateRefs] || {} as Pick<DomReferences, keyof DomReferences>
+  protected get refs(): Partial<DomReferences> {
+    const refs: Partial<DomReferences> = this[privateRefs] || {}
     if (!this[privateRefs]) {
       const uiRoot = this.shadowRoot || this
       const referencedElements = Array.from(uiRoot.querySelectorAll('[ref]'))
