@@ -9,8 +9,8 @@ import {Component, define, setRenderer} from './ignore.js'
 setRenderer(render)
 
 export {
-    Component,
-    define,
-    keyed,
-    tpl,
+  Component,
+  define,
+  keyed,
+  tpl,
 }

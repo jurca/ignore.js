@@ -18,7 +18,7 @@ export const setRenderer = (newRenderer: Renderer) => {
 export const define = <Properties, Attributes, DomReferences>(
   customElement: IComponentStaticProps<Properties, Attributes, DomReferences>,
 ): void => {
-  customElements.define(customElement.name, customElement)
+  customElements.define(customElement.is, customElement)
 }
 
 export const update = <Properties, Attributes, DomReferences>(

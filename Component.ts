@@ -4,11 +4,15 @@ import {
   update,
 } from './runtime.js'
 
-export interface IComponentStaticProps<Properties, Attributes, DomReferences> {
-  useShadowDom?: boolean
-  name: string
-  observedAttributes?: Array<keyof Attributes>
-  props?: Array<keyof Properties>
+export interface IComponentStaticProps<
+  Properties extends {} = {},
+  Attributes extends {} = {},
+  DomReferences extends {} = {}
+> {
+  useShadowDom: boolean
+  is: string
+  observedAttributes: Array<keyof Attributes>
+  props: Array<keyof Properties>
 
   new(): Component<Properties, Attributes, DomReferences>
 }
@@ -19,12 +23,15 @@ const privateRefs = Symbol('ref')
 const privatePendingProps = Symbol('pendingProps')
 const privatePendingAttrs = Symbol('pendingAttrs')
 
-export default class Component<
-  Properties extends {},
-  Attributes extends {},
-  DomReferences extends {},
+export default abstract class Component<
+  Properties extends {} = {},
+  Attributes extends {} = {},
+  DomReferences extends {} = {},
 > extends HTMLElement {
+  public static readonly useShadowDom: boolean = false
+  public static readonly is: string
   public static readonly observedAttributes: string[] = []
+  public static readonly props: string[] = []
 
   public props: Properties = {} as Properties
   public attrs: Attributes = {} as Attributes
