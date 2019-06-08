@@ -11,8 +11,8 @@ export interface IComponentStaticProps<
 > {
   useShadowDom: boolean
   is: string
-  observedAttributes: Array<keyof Attributes>
-  props: Array<keyof Properties>
+  observedAttributes?: Array<keyof Attributes>
+  props?: Array<keyof Properties>
 
   new(): Component<Properties, Attributes, DomReferences>
 }
@@ -30,8 +30,6 @@ export default abstract class Component<
 > extends HTMLElement {
   public static readonly useShadowDom: boolean = false
   public static readonly is: string
-  public static readonly observedAttributes: string[] = []
-  public static readonly props: string[] = []
 
   public props: Properties = {} as Properties
   public attrs: Attributes = {} as Attributes
