@@ -28,15 +28,16 @@
   "homepage": "https://github.com/jurca/ignore.js#readme",
   "devDependencies": {
     "@types/jest": "^24.0.12",
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.12.1",
-    "typescript": "^3.2.2"
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
   },
   "peerDependencies": {
     "@jurca/-x-ignore-tpl": "^0.1.2"
   },
   "jest": {
+    "testEnvironment": "./__test_env__/setup",
     "preset": "ts-jest",
     "moduleNameMapper": {
       "^(.*)\\.js$": "$1"
