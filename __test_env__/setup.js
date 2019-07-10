@@ -21,6 +21,16 @@ class Node {}
 
 class Element extends Node {}
 
-class HTMLElement extends Element {}
+class HTMLElement extends Element {
+    constructor() {
+        super()
+
+        this.shadowRootConfig = null
+    }
+
+    attachShadow(config) {
+        this.shadowRootConfig = config
+    }
+}
 
 module.exports = ComponentTestingEnvironment
