@@ -1,5 +1,5 @@
 import {
-  packagePrivateAfterRenderMethod,
+  packagePrivateBeforeRenderMethod,
   packagePrivateGetPendingDataMethod,
   update,
 } from './runtime.js'
@@ -92,9 +92,11 @@ export default abstract class Component<
 
   public attributeChangedCallback(name: string, oldValue: null | string, newValue: null | string): void {
     // the callback does get called even if the attribute is set to its current value
-    if (this.isConnected && newValue !== oldValue) {
+    if (newValue !== oldValue) {
       (this[privatePendingAttrs] as any)[name] = newValue
-      update(this)
+      if (this.isConnected) {
+        update(this)
+      }
     }
   }
 
@@ -108,11 +110,9 @@ export default abstract class Component<
     }
   }
 
-  public [packagePrivateAfterRenderMethod](newProps: Properties, newAttrs: Attributes): void {
-    this.props = newProps
-    this.attrs = newAttrs
-    this[privatePendingProps] = {} as Pick<Properties, keyof Properties>
-    this[privatePendingAttrs] = {} as Pick<Attributes, keyof Attributes>
+  public [packagePrivateBeforeRenderMethod](): void {
+    this[privatePendingProps] = {} as Partial<Properties>
+    this[privatePendingAttrs] = {} as Partial<Attributes>
 
     this[privateRefs] = null
   }

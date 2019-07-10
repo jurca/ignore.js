@@ -8,7 +8,7 @@ let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
 let updateLock: boolean = false
 
 export const packagePrivateGetPendingDataMethod = Symbol('getPendingData')
-export const packagePrivateAfterRenderMethod = Symbol('afterRender')
+export const packagePrivateBeforeRenderMethod = Symbol('beforeRender')
 
 export const setRenderer = (newRenderer: Renderer) => {
   renderer = newRenderer
@@ -53,16 +53,15 @@ function updateComponent<Properties, Attributes, DomReferences>(
   }
   if (livingComponents.has(component)) {
     component.beforeUpdate(pendingProps, pendingAttrs)
-  } else {
-    component.props = pendingProps
-    component.attrs = pendingAttrs
   }
 
-  const ui = component.render()
-  renderer!(component.shadowRoot || component, ui)
   const previousProps = component.props
   const previousAttributes = component.attrs
-  component[packagePrivateAfterRenderMethod](pendingProps, pendingAttrs)
+  component.props = pendingProps
+  component.attrs = pendingAttrs
+  component[packagePrivateBeforeRenderMethod]()
+  const ui = component.render()
+  renderer!(component.shadowRoot || component, ui)
 
   if (livingComponents.has(component)) {
     component.afterUpdate(previousProps, previousAttributes)
