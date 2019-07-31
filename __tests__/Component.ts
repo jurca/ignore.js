@@ -282,10 +282,9 @@ describe('Component', () => {
           }
         }
 
-        public beforeUpdate(nextProps: {}, nextAttributes: {foo: string}): void {}
+        public beforeUpdate(nextProps: {}, nextAttributes: {foo: string}): void {} // tslint:disable-line no-empty
 
-        public afterUpdate(previousProps: {}, previousAttributes: {}): void {
-        }
+        public afterUpdate(previousProps: {}, previousAttributes: {}): void {} // tslint:disable-line no-empty
       }
 
       const foo = new Foo() as any
