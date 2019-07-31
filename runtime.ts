@@ -6,6 +6,7 @@ const livingComponents = new WeakSet<Component<any, any, any>>()
 let renderer: null | Renderer = null
 let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
 let updateLock: boolean = false
+const tick = Promise.resolve()
 
 export const packagePrivateGetPendingDataMethod = Symbol('getPendingData')
 export const packagePrivateBeforeRenderMethod = Symbol('beforeRender')
@@ -24,19 +25,19 @@ export const define = <Properties, Attributes, DomReferences>(
 export const update = <Properties, Attributes, DomReferences>(
   component: Component<Properties, Attributes, DomReferences>,
 ): void => {
+  componentsScheduledForUpdate.add(component)
   if (!renderer || updateLock) {
-    componentsScheduledForUpdate.add(component)
     return
   }
 
   updateLock = true
-  try {
-    updateComponent(component)
-  } finally {
-    updateLock = false
-  }
-
-  updatePendingComponents()
+  tick.then(() => {
+    try {
+      updatePendingComponents()
+    } finally {
+      updateLock = false
+    }
+  })
 }
 
 function updateComponent<Properties, Attributes, DomReferences>(

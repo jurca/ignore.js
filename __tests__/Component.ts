@@ -27,7 +27,7 @@ describe('Component', () => {
     expect(bar.shadowRootConfig).toEqual({mode: 'open'})
   })
 
-  it('should render itself on mount without executing update callbacks', () => {
+  it('should render itself on mount without executing update callbacks', async () => {
     const render = jest.fn()
     const beforeUpdate = jest.fn()
     const afterUpdate = jest.fn()
@@ -51,6 +51,7 @@ describe('Component', () => {
     const foo = new FooElement()
     ;(foo as any).isConnected = true // tslint:disable-line align whitespace
     foo.connectedCallback()
+    await Promise.resolve()
     expect(render).toHaveBeenCalledTimes(1)
     expect(render).toHaveBeenCalledWith()
     expect(beforeUpdate).not.toHaveBeenCalled()
@@ -116,7 +117,7 @@ describe('Component', () => {
       expect('bar' in foo).toBeTruthy()
     })
 
-    it('should store the set prop values away until an update is performed', () => {
+    it('should store the set prop values away until an update is performed', async () => {
       const value = Math.random()
       let wasCalledTimes = 0
       class FooElement extends Component<{foo: number}> {
@@ -135,13 +136,14 @@ describe('Component', () => {
       expect(foo.props.foo).toBeUndefined()
       foo.isConnected = true
       foo.connectedCallback()
+      await Promise.resolve()
 
       expect(foo.foo).toBe(value)
       expect(foo.props.foo).toBe(value)
       expect(wasCalledTimes).toBe(1)
     })
 
-    it('should invoke the update cycle when props are updated after mount', () => {
+    it('should invoke the update cycle when props are updated after mount', async () => {
       const values = [Math.random(), Math.random(), Math.random()]
       let beforeUpdateCalledTimes = 0
       let renderCalledTimes = 0
@@ -175,12 +177,51 @@ describe('Component', () => {
       foo.bar = values[1]
       foo.isConnected = true
       foo.connectedCallback()
+      expect(beforeUpdateCalledTimes).toBe(0)
+      expect(renderCalledTimes).toBe(0)
+      expect(afterUpdateCalledTimes).toBe(0)
+      await Promise.resolve()
 
+      expect(renderCalledTimes).toBe(1)
       foo.foo = values[2]
+      expect(renderCalledTimes).toBe(1)
+      await Promise.resolve()
       expect(beforeUpdateCalledTimes).toBe(1)
       expect(renderCalledTimes).toBe(2)
       expect(afterUpdateCalledTimes).toBe(1)
       expect(foo.foo).toBe(values[2])
+    })
+
+    it('should batch prop updates', async () => {
+      let firstRender = true
+      class FooElement extends Component<{foo: number, bar: number}> {
+        public static props = ['foo', 'bar']
+
+        public render(): any {
+          if (firstRender) {
+            expect(this.props.foo).toBe(1)
+            expect(this.props.bar).toBe(2)
+            firstRender = false
+          } else {
+            expect(this.props.foo).toBe(123)
+            expect(this.props.bar).toBe(456)
+          }
+        }
+      }
+
+      const foo = new FooElement() as any
+      jest.spyOn(foo, 'render')
+      foo.foo = 1
+      foo.bar = 2
+      foo.isConnected = true
+      foo.connectedCallback()
+      await Promise.resolve() // on-mount render
+
+      foo.foo = 123
+      foo.bar = 456
+      expect(foo.render).toHaveBeenCalledTimes(1)
+      await Promise.resolve() // on-update render
+      expect(foo.render).toHaveBeenCalledTimes(2)
     })
   })
 

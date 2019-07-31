@@ -29,6 +29,8 @@ describe('runtime', () => {
     })
 
     describe('update', () => {
+        it('should batch on-mount renders of multiple new components', () => {})
+
         it('should execute simple update cycle for first-time mounted components', () => {
         })
 
