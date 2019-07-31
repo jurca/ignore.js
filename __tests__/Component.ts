@@ -225,7 +225,93 @@ describe('Component', () => {
     })
   })
 
-  describe('attrs', () => {})
+  describe('attrs', () => {
+    it('should batch attribute updates', async () => {
+      let firstRender = true
+      let thrownError = null
+      class FooElement extends Component<{}, {foo: string, bar: string}> {
+        public static props = []
+
+        public render() {
+          try {
+            if (firstRender) {
+              expect(this.attrs.foo).toBe('456')
+              expect(this.attrs.bar).toBe('def')
+              firstRender = false
+            } else {
+              expect(this.attrs.foo).toBe('123')
+              expect(this.attrs.bar).toBe('abc')
+            }
+          } catch (error) {
+            thrownError = error
+          }
+        }
+      }
+
+      const foo = new FooElement() as any
+      jest.spyOn(foo, 'render')
+      foo.attributeChangedCallback('foo', null, '456')
+      foo.attributeChangedCallback('bar', null, 'def')
+      foo.isConnected = true
+      foo.connectedCallback()
+      await Promise.resolve()
+
+      expect(foo.render).toHaveBeenCalledTimes(1)
+      foo.attributeChangedCallback('foo', '456', '123')
+      foo.attributeChangedCallback('bar', 'def', 'abc')
+      expect(foo.render).toHaveBeenCalledTimes(1)
+      await Promise.resolve()
+      expect(foo.render).toHaveBeenCalledTimes(2)
+      expect(thrownError).toBeNull()
+    })
+
+    it('should update the attributes during the lifecycle correctly', async () => {
+      let firstRender = true
+      let thrownError = null
+      class Foo extends Component<{}, {foo: string}> {
+        public render() {
+          try {
+            if (firstRender) {
+              firstRender = false
+              expect(this.attrs.foo).toBe('abc')
+            } else {
+              expect(this.attrs.foo).toBe('def')
+            }
+          } catch (error) {
+            thrownError = error
+          }
+        }
+
+        public beforeUpdate(nextProps: {}, nextAttributes: {foo: string}): void {}
+
+        public afterUpdate(previousProps: {}, previousAttributes: {}): void {
+        }
+      }
+
+      const foo = new Foo() as any
+      jest.spyOn(foo, 'render')
+      jest.spyOn(foo, 'beforeUpdate')
+      jest.spyOn(foo, 'afterUpdate')
+      foo.attributeChangedCallback('foo', null, 'abc')
+      foo.isConnected = true
+      foo.connectedCallback()
+      expect(foo.render).toHaveBeenCalledTimes(0)
+      expect(foo.beforeUpdate).toHaveBeenCalledTimes(0)
+      expect(foo.afterUpdate).toHaveBeenCalledTimes(0)
+      await Promise.resolve()
+
+      expect(foo.render).toHaveBeenCalledTimes(1)
+      expect(foo.beforeUpdate).toHaveBeenCalledTimes(0)
+      expect(foo.afterUpdate).toHaveBeenCalledTimes(0)
+      foo.attributeChangedCallback('foo', null, 'def')
+      await Promise.resolve()
+      expect(foo.render).toHaveBeenCalledTimes(2)
+      expect(foo.beforeUpdate).toHaveBeenCalledTimes(1)
+      expect(foo.afterUpdate).toHaveBeenCalledTimes(1)
+
+      expect(thrownError).toBeNull()
+    })
+  })
 
   describe('refs', () => {})
 })
