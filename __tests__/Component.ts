@@ -313,5 +313,85 @@ describe('Component', () => {
     })
   })
 
-  describe('refs', () => {})
+  describe('refs', () => {
+    it('should not populate refs until requested', async () => {
+      const fooElement = {
+        get parentNode() {
+          return foo
+        },
+        getAttribute(attributeName: string): string {
+          expect(attributeName).toBe('ref')
+          return 'fooElm'
+        },
+      }
+      class Foo extends Component<{foo: number}, {}, {fooElm: any}> {
+        public static props = ['foo']
+
+        public render() {
+          return null
+        }
+
+        public querySelectorAll(selector: string): any {
+          expect(selector).toBe('[ref]')
+          return [fooElement]
+        }
+      }
+      const foo = new Foo() as any
+      jest.spyOn(foo, 'querySelectorAll')
+      foo.isConnected = true
+      foo.foo = 1
+      foo.connectedCallback()
+
+      await Promise.resolve()
+      expect(foo.querySelectorAll).toHaveBeenCalledTimes(0)
+      const refs = foo.refs
+      expect(foo.querySelectorAll).toHaveBeenCalledTimes(1)
+      const refs2 = foo.refs
+      expect(foo.querySelectorAll).toHaveBeenCalledTimes(1)
+      expect(refs2).toBe(refs)
+      expect(refs).toEqual({
+        fooElm: fooElement,
+      })
+    })
+
+    it('should update refs after every render (if requested)', async () => {
+      const fooElement = {
+        get parentNode() {
+          return foo
+        },
+        getAttribute(attributeName: string): string {
+          expect(attributeName).toBe('ref')
+          return 'fooElm'
+        },
+      }
+      class Foo extends Component<{foo: number}, {}, {fooElm: any}> {
+        public static props = ['foo']
+
+        public render() {
+          return null
+        }
+
+        public querySelectorAll(selector: string): any {
+          expect(selector).toBe('[ref]')
+          return [fooElement]
+        }
+      }
+      const foo = new Foo() as any
+      jest.spyOn(foo, 'querySelectorAll')
+      foo.isConnected = true
+      foo.foo = 1
+      foo.connectedCallback()
+      await Promise.resolve()
+
+      const refs1 = foo.refs
+      expect(foo.querySelectorAll).toHaveBeenCalledTimes(1)
+      foo.foo = 2
+      await Promise.resolve()
+      expect(foo.querySelectorAll).toHaveBeenCalledTimes(1)
+      const refs2 = foo.refs
+      expect(foo.querySelectorAll).toHaveBeenCalledTimes(2)
+      expect(refs1).not.toBe(refs2)
+      expect(refs1).toEqual(refs2)
+    })
+  })
 })
