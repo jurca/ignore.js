@@ -1,3 +1,5 @@
+// tslint:disable max-classes-per-file
+
 import Component from '../Component.js'
 import * as runtime from '../runtime.js'
 
@@ -12,7 +14,8 @@ describe('runtime', () => {
         }
         runtime.define(Foo)
 
-        const foo = new Foo()
+        const foo = new Foo() as any
+        foo.isConnected = true
         foo.connectedCallback()
 
         expect(render).not.toHaveBeenCalled()
@@ -20,6 +23,26 @@ describe('runtime', () => {
 
     describe('setRenderer', () => {
         it('should update pending components once set', () => {
+            class Foo extends Component {
+                public static is = 'x-foo'
+                public render() {
+                    return null
+                }
+            }
+            runtime.define(Foo)
+
+            const foo = new Foo() as any
+            jest.spyOn(foo, 'render')
+            foo.isConnected = true
+            foo.connectedCallback()
+            expect(foo.render).not.toHaveBeenCalled()
+
+            runtime.setRenderer(jest.fn())
+            expect(foo.render).toHaveBeenCalledTimes(1)
+        })
+
+        afterEach(() => {
+            runtime.setRenderer(null as any)
         })
     })
 
