@@ -48,6 +48,16 @@ describe('runtime', () => {
 
     describe('define', () => {
         it('should register the component\'s element with the customElements registry', () => {
+            const rand = Math.random()
+            class Foo extends Component {
+                public static is = `x-foo${rand}`
+                public render() {
+                    return null
+                }
+            }
+
+            runtime.define(Foo)
+            expect((customElements as any).elements[`x-foo${rand}`]).toBe(Foo)
         })
     })
 
