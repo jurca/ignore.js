@@ -57,7 +57,7 @@ describe('runtime', () => {
         it('should execute simple update cycle for first-time mounted components', () => {
         })
 
-        it('should execture the full update cycle for repeated updates of components', () => {
+        it('should execute the full update cycle for repeated updates of components', () => {
         })
 
         it('should queue updates of nested components and update them in sequence instead of recursively', () => {
