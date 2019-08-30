@@ -5,6 +5,7 @@ export type Renderer = (container: Element | ShadowRoot, ui: any) => void
 const livingComponents = new WeakSet<Component<any, any, any>>()
 let renderer: null | Renderer = null
 let componentsScheduledForUpdate = new Set<Component<any, any, any>>()
+const updatedComponentsStack: Array<[Component<any, any, any>, any, any]> = []
 let updateLock: boolean = false
 const tick = Promise.resolve()
 
@@ -64,10 +65,8 @@ function updateComponent<Properties, Attributes, DomReferences>(
   const ui = component.render()
   renderer!(component.shadowRoot || component, ui)
 
-  if (livingComponents.has(component)) {
-    component.afterUpdate(previousProps, previousAttributes)
-  }
-  livingComponents.add(component)
+  // No need to check for duplicities, since no single component can be updated twice while updating the component tree.
+  updatedComponentsStack.push([component, previousProps, previousAttributes])
 }
 
 function updatePendingComponents(): void {
@@ -80,4 +79,12 @@ function updatePendingComponents(): void {
       }
     }
   }
+
+  for (const [component, previousProps, previousAttributes] of updatedComponentsStack.reverse()) {
+    if (livingComponents.has(component)) {
+      component.afterUpdate(previousProps, previousAttributes)
+    }
+    livingComponents.add(component)
+  }
+  updatedComponentsStack.splice(0)
 }
