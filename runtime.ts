@@ -38,6 +38,8 @@ export const update = <Properties, Attributes, DomReferences>(
     } finally {
       updateLock = false
     }
+  }).catch((updateError) => {
+    console.error('Ignore.js component update has failed', updateError) // tslint:disable-line no-console
   })
 }
 
