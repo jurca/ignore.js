@@ -1,10 +1,18 @@
 {
     "compilerOptions": {
         "allowUnreachableCode": false,
+        "declaration": true,
+        "inlineSources": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
+        "sourceMap": true,
         "strict": true,
         "target": "esnext",
         "skipLibCheck": true
-    }
+    },
+    "exclude": [
+        "__test_env__",
+        "__tests__",
+        "dist"
+    ]
 }
