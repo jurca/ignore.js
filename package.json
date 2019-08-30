@@ -35,7 +35,7 @@
     "typescript": "^3.4.5"
   },
   "peerDependencies": {
-    "@jurca/-x-ignore-tpl": "^0.1.2"
+    "@jurca/-x-ignore-tpl": "^0.1.4"
   },
   "jest": {
     "testEnvironment": "./__test_env__/setup",
