@@ -128,25 +128,18 @@ describe('runtime', () => {
 
           private child: null | C = null
           private firstRender: boolean = true
-          private firstRendered: boolean = false
 
           constructor(private lockName: 'foo1' | 'foo2', private childFactory: () => C) {
             super()
           }
 
           public render() {
-            if (this.firstRendered) {
-              expect(locks[this.lockName]).toBe(ComponentState.RENDERED)
-              this.firstRendered = false
-            } else {
-              expect(
-                [ComponentState.UNMOUNTED, ComponentState.BEFORE_UPDATE].includes(locks[this.lockName]),
-              ).toBe(true)
-            }
+            expect(
+              [ComponentState.UNMOUNTED, ComponentState.BEFORE_UPDATE].includes(locks[this.lockName]),
+            ).toBe(true)
             if (this.firstRender) {
               this.child = this.childFactory()
               this.firstRender = false
-              this.firstRendered = true
             }
             (this.child as any).foo = this.props.foo
             locks[this.lockName] = ComponentState.RENDERED
@@ -172,20 +165,13 @@ describe('runtime', () => {
           public static props = ['foo']
 
           private firstRender: boolean = true
-          private firstRendered: boolean = false
 
           public render() {
             expect(locks.foo1).toBe(ComponentState.RENDERED)
             expect(locks.foo2).toBe(ComponentState.RENDERED)
-            if (this.firstRendered) {
-              expect(locks.bar).toBe(ComponentState.RENDERED)
-              this.firstRendered = false
-            } else {
-              expect([ComponentState.UNMOUNTED, ComponentState.BEFORE_UPDATE].includes(locks.bar)).toBe(true)
-            }
+            expect([ComponentState.UNMOUNTED, ComponentState.BEFORE_UPDATE].includes(locks.bar)).toBe(true)
             if (this.firstRender) {
               this.firstRender = false
-              this.firstRendered = true
             }
             locks.bar = ComponentState.RENDERED
             return null
@@ -208,10 +194,10 @@ describe('runtime', () => {
           }
         }
 
-        runtime.setRenderer((container: any, ui: any) => {
-          if (!ui.isConnected) {
-            ui.isConnected = true
-            ui.connectedCallback()
+        runtime.setRenderer((currentComponent: any, renderedSubComponent: any) => {
+          if (renderedSubComponent && !renderedSubComponent.isConnected) {
+            renderedSubComponent.isConnected = true
+            renderedSubComponent.connectedCallback()
           }
         })
 
