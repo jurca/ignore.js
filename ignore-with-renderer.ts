@@ -12,6 +12,7 @@ export {
   Component,
   define,
   keyed,
+  render,
   Renderer,
   tpl,
 }
