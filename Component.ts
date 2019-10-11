@@ -46,6 +46,9 @@ export default abstract class Component<
     }
 
     for (const propName of componentClass.props || []) {
+      if (propName in this) { // The browser may delay initializing the element until it is mounted into the DOM
+        this[privatePendingProps][propName] = (this as any)[propName]
+      }
       Object.defineProperty(this, propName, {
         enumerable: true,
         set(value) {
